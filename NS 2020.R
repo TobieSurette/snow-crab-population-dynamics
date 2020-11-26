@@ -26,6 +26,12 @@ y$sex[which(y$year == 2020 & y$species == 2550 & is.na(y$egg.condition))] <- 1
 y$sex[which(y$year == 2020 & y$species == 2550 & !is.na(y$egg.condition))] <- 2
 y$gear <- x$gear[match(y$set.number, x$set.number)]
 
+z <- read.nssbio(2020, species = 2550)
+
+x <- read.nsslen(2019, species = 2550)
+y <- read.nsslen(2019, species = 2550)
+z <- read.nssbio(2019, species = 2550)
+
 clg()
 dev.new(height = 11, width = 8.5)
 m <- kronecker(1:4, matrix(1, nrow = 5, ncol = 5))
@@ -39,6 +45,7 @@ for (gear in c(13, 19)){
       gbarplot(table(y$length[y$sex == sex & y$gear == gear]), width = 1, border = "grey50", add = TRUE)
       text(10, 120, c("Male", "Female")[sex])
       text(100, 120, gear(gear))
+      box()
    }
 }
 axis(1)
