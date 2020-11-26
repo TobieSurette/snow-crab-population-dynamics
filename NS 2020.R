@@ -9,7 +9,9 @@ x$longitude.stop <- -dmm2deg(x$longitude.stop)
 x$latitude.start <- dmm2deg(x$latitude.start)
 x$latitude.stop <- dmm2deg(x$latitude.stop)
 
-which(round(depth(longitude(x), latitude(x))) <= 0)
+# Check for coordinate errors:
+x[which(round(depth(x$longitude.start, x$latitude.start)) <= 0), ]
+x[which(round(depth(x$longitude.stop, x$latitude.stop)) <= 0), ]
 
 map.new(xlim = c(-65.5, -63), ylim = c(45.75, 47.25))
 map("bathymetry")
