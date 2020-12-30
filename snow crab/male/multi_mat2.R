@@ -4,8 +4,10 @@ library(gulf.spatial)
 library(gulf.graphics)
 library(gulf.stats)
 
+setwd("snow crab/male")
+
 # Model parameters:
-n_instar <- 7
+n_instar <- 10
 years  <- 2006:2020
 sex <- 1
 step <- 0.5
@@ -23,7 +25,8 @@ if (sex == 1){
    ylim <- c(0, 40)
 }
 
-source("snow crab/male/instar.year.data.R")
+#source("snow crab/male/instar.year.data.R")
+load("snow crab/male/males.2006-2020.rdata")
 
 # Work computer fix:
 if (Sys.getenv("RSTUDIO_USER_IDENTITY") == "SuretteTJ") Sys.setenv(BINPREF = "C:/Rtools/mingw_64/bin/")
@@ -38,7 +41,7 @@ parameters <- list(mu0                 = 10,                             # First
                    log_hiatt_intercept = log(c(0.689, 10.000)),          # Hiatt intercept parameters.
                    log_growth_error    = log(c(0.01, 0.25)),             # Growth increment error inflation parameters.
                    mu_year_instar      = rep(0, n_instar * n_year),      # Log-scale instar mean year interaction (n_instar x n_year).
-                   log_sigma_mu_year_instar   = log(c(0.25,0.35,0.5,0.75,1.25,1.5,2)),  # Instar mean year interaction error term.
+                   log_sigma_mu_year_instar   = log(c(0.25,0.35,0.5,0.75,1.25,1.5,2, 2, 2, 2)),  # Instar mean year interaction error term.
                    delta_mat = -1.5,
                    log_n_imm_year_0    = rep(4, n_instar-1),             # First year immature instar abundances (n_instar-1).
                    log_n_imm_instar_0  = rep(4, n_year),                 # First instar recruitment for all years (n_year).
