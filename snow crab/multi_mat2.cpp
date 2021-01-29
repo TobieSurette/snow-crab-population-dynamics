@@ -181,12 +181,14 @@ template<class Type> Type objective_function<Type>::operator()(){
       // Define selectivity curve:
       Type selectivity = Type(1) / (Type(1) + exp(-exp(log_selectivity_slope) * (x_imm[i] - selectivity_x50))); 
       for (int k = 0; k < n_instar; k++){
-         eta_imm[i] += year_effect[year_imm[i]] * 
-                       selectivity *
-                      (n_imm(k,year_imm[i]) + n_skp(k,year_imm[i])) * 
+         eta_imm[i] += (n_imm(k,year_imm[i]) + n_skp(k,year_imm[i])) * 
                       (pnorm(x_imm[i] + delta_x / 2, mu_imm(k,year_imm[i]), sigma[k]) - 
                        pnorm(x_imm[i] - delta_x / 2, mu_imm(k,year_imm[i]), sigma[k]));
       }
+      
+      // Apply year-effect and survey trawl selectivity:
+      eta_imm[i] = year_effect[year_imm[i]] * selectivity * eta_imm[i]; 
+      
       if (eta_imm[i] > 0){ 
          v -= dpois(f_imm[i], eta_imm[i], true);
       }
@@ -218,12 +220,12 @@ template<class Type> Type objective_function<Type>::operator()(){
                            pnorm(x_mat[i] - delta_x / 2, mu_mat(k,year_mat[i],m), sigma[k]));
          }
          
-         // Add year effects and selectivity adjustments:
-         eta_rec[i] += year_effect[year_mat[i]] * selectivity * eta_rec[i];
-         eta_res[i] += year_effect[year_mat[i]] * selectivity * eta_res[i];
+         // Add year effects and survey trawl selectivity adjustments:
+         eta_rec[i] = year_effect[year_mat[i]] * selectivity * eta_rec[i];
+         eta_res[i] = year_effect[year_mat[i]] * selectivity * eta_res[i];
          
          // Calculate total matures:
-         eta_mat[i] += eta_rec[i] + eta_res[i];
+         eta_mat[i] += (eta_rec[i] + eta_res[i]);
       }
       
       // Poisson likelihood:

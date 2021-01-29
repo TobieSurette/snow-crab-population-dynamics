@@ -86,13 +86,6 @@ obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = rand
 obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
 parameters <- update.parameters(parameters, obj, map = map)
 
-# Add skip-moulting probability parameters:
-map$logit_p_skp <- as.factor(c(rep(NA, 5), 1:(length(parameters$logit_p_skp)-5)))
-map <- update.map(map, free = c("logit_p_skp"))
-obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = random, map = map)
-obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 5000))$par
-parameters <- update.parameters(parameters, obj, map = map)
-
 # Add year effect parameters:
 map <- update.map(map, free = c("log_sigma_year_effect"))
 parameters$log_year_effect[length(parameters$log_year_effect)] <- 0
@@ -113,6 +106,18 @@ obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = rand
 obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 1500))$par
 parameters <- update.parameters(parameters, obj, map = map)
 
+# Add some growth parameters:
+map <- update.map(map, free = c("log_hiatt_slope", "log_hiatt_intercept", "log_sigma0"))
+obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = random, map = map)
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
+parameters <- update.parameters(parameters, obj, map = map)
+
+# Add instar error parameter:
+map <- update.map(map, free = c("log_growth_error"))
+obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = random, map = map)
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
+parameters <- update.parameters(parameters, obj, map = map)
+
 # Add delta_mat:
 map <- update.map(map, free = c("delta_mat"))
 obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = random, map = map)
@@ -125,17 +130,7 @@ obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = rand
 obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
 parameters <- update.parameters(parameters, obj, map = map)
 
-# Add some growth parameters:
-map <- update.map(map, free = c("log_hiatt_slope", "log_hiatt_intercept", "log_sigma0"))
-obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = random, map = map)
-obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 1500))$par
-parameters <- update.parameters(parameters, obj, map = map)
 
-# Add instar error parameter:
-map <- update.map(map, free = c("log_growth_error"))
-obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = random, map = map)
-obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 1000))$par
-parameters <- update.parameters(parameters, obj, map = map)
 
 # Add annual growth parameters:
 map <- update.map(map, free = "log_sigma_mu_year_instar")

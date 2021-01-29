@@ -27,6 +27,11 @@ setwd("snow crab")
 if (sex == 1) load("males.2006-2020.rdata")
 if (sex == 2) load("females.2006-2020.rdata")
 
+# Extract unique size values and convert to indices:
+data$ux <- sort(unique(c(data$x_imm, data$x_mat)))
+data$x_imm <- match(data$x_imm, data$ux)-1
+data$x_mat <- match(data$x_mat, data$ux)-1
+
 # Work computer fix:
 if (Sys.getenv("RSTUDIO_USER_IDENTITY") == "SuretteTJ") Sys.setenv(BINPREF = "C:/Rtools/mingw_64/bin/")
 
