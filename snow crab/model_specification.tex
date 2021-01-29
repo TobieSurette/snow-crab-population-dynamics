@@ -1,0 +1,505 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Size-based Population Model to Southern Gulf of Saint Lawrence Snow Crab},
+  pdfauthor={Tobie Surette},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs}
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{Size-based Population Model to Southern Gulf of Saint Lawrence Snow Crab}
+\author{Tobie Surette}
+\date{}
+
+\begin{document}
+\maketitle
+
+\hypertarget{population-models}{%
+\subsection{Population models}\label{population-models}}
+
+Population models are mathematical constructs which attempt to
+quantitatively describe how abundance indices are observed to vary over
+time.
+
+When successful, models capture some essence of the variation observed
+in the data, providing some insight on underlying biological processes,
+the impact of fishing activities, which can be used to predict future
+dynamics of the population.
+
+The complexity of these models can range from the very simple to the
+complex and very detailed.
+
+In this report, we present a size-based population model of the annual
+dynamics of the Southern Gulf of Saint Lawrence snow crab population.
+
+Though size-based, crab are partitioned by instar, i.e.~the number of
+benthic moults crab have undergone, allowing for the specification of
+biological effects based on instar, as well as on size or year.
+
+Instars are identified using a structured growth process which models
+the expected growth-at-moult between instars and its variation, which is
+used to fit a set of modes, the product of instar growth constraints,
+observed in the annual size-frequency data.
+
+Biological processes included in the model are growth-at-moult,
+population recruitment, natural and fishing-related mortality,
+skip-moulting probabilities and moult-to-maturity probabilities.
+
+Sampling-related processes are incorporated in the form of survey trawl
+size-selectivity curves as well as global year effects, intended to shed
+light on potential differences in catchability between survey years,
+which have been associated with vessel changes, as well as other survey
+sampling changes.
+
+For the purposes of this study, the snow crab population is assumed to
+be closed, which is a reasonnble assumption as the stock is largely
+bounded by the Gaspé Pensinsula to the North, Cape Breton Island to the
+Southeast, and the deep warm waters of the Laurentian Channel between
+the two, though limited movement of crab along the margins of Gaspé and
+Cape Breton are known to occur.
+
+Limits of population models: Population models such as those presented
+here are often over-parameterized, meaning that in some way the amount
+of information being estimated exceeds the inherent information content
+of the data. As such, such analyses often yield multiple solutions,
+representing potentially very different biological states, which explain
+the data to a similar degree.
+
+Often, external biological information or assumptions are imposed on the
+model to constrain the parameter space to solutions which are more
+consistent with biological knowledge.
+
+Population model development as such is generally a protracted process
+of many iterations of adding or removing features, testing the model
+against a suite of diagnostics, such as residual analyses, predictive
+tests, cross-validations.
+
+From these, the behaviour of the model under various assumptions becomes
+known, and experience and a feelings regarding its robustness is gained.
+
+In this context, the model described here is not presented as a fait
+accompli, but rather as a presentation of the strategy and as a
+prototype which has the right balance of simplicity and complexity to
+provide, in the short-term, improvements in:
+
+\begin{itemize}
+\tightlist
+\item
+  the retroactive estimation and prediction of annual variations in
+  skip-moulting and moult-to-maturity probabilities.
+\item
+  the prediction of future population dynamics, specifically fishery
+  recruitment.
+\item
+  relative catchability estimates between different survey years, or
+  survey vessels, which may provide a means of retroactively
+  standardizing the snow crab survey abundance and biomass time series.
+\end{itemize}
+
+As side-benefits, the proposed modeling framework may also be expected
+to yield:
+
+\begin{itemize}
+\tightlist
+\item
+  estimates of annual growth estimates, in the form of mean instar size
+  estimates.
+\item
+  fishery-independent estimates of fishing mortality, including discard
+  mortality.
+\item
+  a framework for modeling spatially-reference stock dynamics.
+\end{itemize}
+
+In this way, the population model represent a synthesis of various
+biological and sampling processes.
+
+Thus, population models can potentially provide information regarding a
+slew of biological and survey effects and their interaction, although
+this interaction often means that various solutions may come about which
+explain the data to a similar degree \ldots{} i.e.~there may be
+competing solutions, different suppositions, which may explain the
+observed patterns in the data to a similar degree. So the model requires
+good run of diagnostics and tests of robustness in order to explore the
+limits and stability of any identified solutions.
+
+\hypertarget{to-do}{%
+\subsection{To do:}\label{to-do}}
+
+\begin{itemize}
+\item
+  Depth-based estimation.
+\item
+  Implement fishing mortality effect : a scaled-logistic-type effect
+  which kicks in around 95mm.
+\item
+  a\_year / (1 + exp(4\emph{m}(x - 95))), scale varies by year.
+\item
+  skip-moulting variation by year : global year increase (i.e.~not
+  instar specific).
+\item
+  Remove superfluous p\_mat and p\_skip row/column
+\item
+  Add interaction error / mortality variability
+\item
+  Add vessel effect
+\item
+  Add mature growth modification\\
+\item
+  Display histograms with immatures y and mature y + 1
+\item
+  Add annual global scaling effect.
+\item
+  Improve instar variance fit for matures.
+\item
+  Improve growth mean fit for immature instars VIII and IX.
+\item
+  Implement log\_mu\_year which better controls variability within
+  instars
+\item
+  Model seems to be growing adolescents too fast, but log\_mu\_year
+  shrinks them back down \ldots{} an effort to\ldots.?
+\end{itemize}
+
+\hypertarget{data}{%
+\subsection{Data}\label{data}}
+
+Source data for the model came from the annual snow crab survey from
+2006 to 2020.
+
+Average length-frequencies were standardized by trawl swept area were
+calculated by survey year, sex and morphometric maturity.
+
+For the purposes of evaluating and developing the snow crab model, the
+time series was limited to the period from 2006 to 2020, owing to the
+spatial homogeneity of the sampling design during this period. The
+survey was marginally expanded in 2011 and this will need to be
+considered when interpreting the model results.
+
+The time series will be extended in future version of the model into
+past surveys where changing survey area and heterogeneous spatial
+distributions may lead to some degree of scaling issues, which will
+hopefully be corrected by the model.
+
+This treatment of densities as frequencies allows for approximate
+statistical
+
+\hypertarget{model-specification}{%
+\subsection{Model specification}\label{model-specification}}
+
+\hypertarget{description}{%
+\subsubsection{Description:}\label{description}}
+
+In the literature, benthic stages of snow crab instars are numbered
+using roman numerals, with I representing the first stage after the
+megalopses larvae have settled on the bottom and moulted.
+
+For both sexes, instars I to VIII are considered sexually immature and
+characterized by high relative growth rates. Adolescence begins with the
+onset of gonadal development at instar VIII, which is characterized by
+lower relative growth rates.
+
+Sexual maturity, equated here as the terminal moult accompanied by
+characteristic morphometric changes, is attained at instars IX or
+larger. The vast majority of female snow crabs reach sexual maturity at
+instars IX and X.
+
+Females growing to instar XI and larger were considered as being too
+rare an occurrence to be considered in the analysis. Mature male snow
+crab moult to maturity over a much wider size range, from instars IX to
+XIII. Instar XIV males were considered as relatively rare and not
+considered in the model. It follows that instar X in females and instar
+XII in males were the largest adolescent instars. Growth in the model is
+a combination of two separate processes: one which specifies the
+probability of moulting from one instar to the next, and the other which
+specifies the predicted increase in size and its variation when
+moulting.
+
+Two moulting processes were considered. Sexual maturation was modelled
+as the proportions of crab that undergo the terminal moult to maturity
+by instar and year. Although the probability of moulting to maturity for
+the largest adolescent instars, i.e.~instar IX in females and XII in
+males, was considered to be 1, instars VIII in females and instars
+VIII-XI in males show variable proportions from year-to-year.
+Skip-moulting was only considered for adolescent males, was similarly
+modelled by instar and year. Moulting was considered to occur annually
+all instars.
+
+Although the odd instar I, II and III do appear in survey catches, only
+instar IV crab are present in sufficient amounts to be analyzed by the
+model. For practical reasons, annual recruitment to the population was
+defined as the abundance of instar IV.
+
+\hypertarget{formal-definition}{%
+\subsubsection{Formal definition:}\label{formal-definition}}
+
+Instar carapace width sizes were assumed to follow a Gaussian
+distribution curve with structured mean and error. Means for successive
+instars instar were defined iteratively as follows, allowing for known
+differences in growth between immature and adolescent crab: \[
+   \mu_{k+1} = \alpha_{imm}\mu_{k} + \beta_{imm}, \text{ for }  k \le 8  \\
+   \mu_{k+1} = \alpha_{ado}\mu_{k} + \beta_{ado}, \text{ for }  k > 8  \\
+\] where \(\mu_{k}\) is the mean for the \(k^{th}\) instar,
+\(\alpha_{imm}\) and \(\beta_{ado}\) are Hiatt slope and intercept
+parameters, respectively for immature crab, with \(\alpha_{ado}\) and
+\(\beta_{ado}\) being the corresponding adolescent phase parameters.
+
+Instar standard errors are similarly defined, but allow for additional
+error inflation in the form of two positive parameters \(\gamma_{imm}\)
+and \(\gamma_{ado}\):
+
+\[
+   \sigma_{k+1} = (\alpha_{imm} + \gamma_{imm}) \sigma_{k}, \text{ for } k \le 8  \text{ and }  \gamma_{imm} > 0 \\
+   \sigma_{k+1} = (\alpha_{ado} + \gamma_{ado}) \sigma_{k}, \text{ for } k > 8  \text{ and }  \gamma_{ado} > 0 \\   
+\] Growth for mature crab was modified slightly by including an additive
+term \(\Delta_{mat}\):
+
+\[
+   \mu_{k}^{mat} = \mu_{k}^{ado} + \Delta_{mat}
+\] Based on biological considerations, we expect that
+\(\Delta_{mat} < 0\).
+
+Inferences on growth-at-moult can often be obtained from analysis of
+these modes and the approach has traditionally been to treat the data as
+arising from finite mixture model with probability density of the form:
+
+\[
+   \sum_{k=1}^{K} \pi_k \phi \left(x | \mu_k , \sigma_k^2  \right)
+\] where \(k\) indexes the instars, \(x\) represents crab size,
+\(\pi_k\) are the proportions of each instar in the sample, \(\mu_k\)
+are their mean sizes and \(\sigma_k^2\) are their variances.
+
+However, inference for larger instars is generally more uncertain owing
+to increasing variability in growth during adolescence, which resulting
+in size overlap between successive instars at these stages.
+
+\hypertarget{model-assumptions}{%
+\subsubsection{Model Assumptions}\label{model-assumptions}}
+
+\begin{itemize}
+\item
+  There is a largest immature instar, for which all individuals either
+  skip-moult or moult to maturity the following year.
+\item
+  Skip-moulters moult to maturity the following year.
+\item
+  Skip-moulters only exist from instar IX and onward.
+\item
+  Females have negligible amounts of skip-moulting.
+\item
+  Matures exist only from instar IX onward.
+\item
+\end{itemize}
+
+\hypertarget{population-dynamics-equations}{%
+\subsubsection{Population dynamics
+equations}\label{population-dynamics-equations}}
+
+Stage-based processes affecting the population dynamics are the
+probability of moulting to maturity from one instar to the next, the
+probability of an instar skipping a moult (i.e.~not growing and
+remaining mature) and annual mortality for immatures and matures.
+
+The selectivity function is length-based, being a sigmoid-type function.
+
+With \(y\) indxing the survey year and \(k\) indexing the instar, the
+population dynamics equations are as follows:
+
+\[
+\begin{aligned}
+   n_{k,y}^{imm}  &= (1-p_{k-1,y-1}^{mat}) \times (1-p_{k-1}^{skip}) \times (1-M^{imm}) \times n_{k-1,y-1}^{imm} \\
+   n_{k,y}^{skip} &= (1-p_{k-1,y-1}^{mat}) \times p_{k-1}^{skp} \times (1-M^{imm}) \times n_{k,y-1}^{imm} \\
+   n_{k,y}^{rec}  &= (1-M^{mat}) \times \left[(1-p_{k-1}^{skp}) \times p_{k-1,y-1}^{mat} \times n_{k-1,y-1}^{imm} + n_{k-1,y-1}^{skip} \right] \\  
+   n_{k,y}^{res}  &= (1-M^{mat}) \times \left[n_{k,y-1}^{rec} + n_{k,y-1}^{res} \right] \\ 
+   n_{k,y}^{mat}  &= n_{k,y}^{rec} + n_{k,y}^{res}
+\end{aligned}
+\] with the superscripts \(imm\) representing regular immatures,
+\(skip\) representing immatures which have skipped the previous moult,
+\(rec\) representing new mature recruits, \(res\) representing residuals
+matures and \(mat\) representing all matures, i.e.~the sum of recruits
+and residuals.
+
+\begin{longtable}[]{@{}cl@{}}
+\toprule
+\begin{minipage}[b]{0.20\columnwidth}\centering
+Variable\strut
+\end{minipage} & \begin{minipage}[b]{0.74\columnwidth}\raggedright
+Description\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.20\columnwidth}\centering
+\(n_{k,y}^{imm}\)\strut
+\end{minipage} & \begin{minipage}[t]{0.74\columnwidth}\raggedright
+Population number of immature crab.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.20\columnwidth}\centering
+\(n_{k,y}^{skip}\)\strut
+\end{minipage} & \begin{minipage}[t]{0.74\columnwidth}\raggedright
+Population number of immature crab which skipped the previous
+moult.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.20\columnwidth}\centering
+\(n_{k,y}^{rec}\)\strut
+\end{minipage} & \begin{minipage}[t]{0.74\columnwidth}\raggedright
+Population number of new mature recruits.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.20\columnwidth}\centering
+\(n_{k,y}^{res}\)\strut
+\end{minipage} & \begin{minipage}[t]{0.74\columnwidth}\raggedright
+Population number of old mature residuals (i.e.~non-recruits).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.20\columnwidth}\centering
+\(n_{k,y}^{mat}\)\strut
+\end{minipage} & \begin{minipage}[t]{0.74\columnwidth}\raggedright
+Population number of total mature crab.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.20\columnwidth}\centering
+\(M^{imm}\)\strut
+\end{minipage} & \begin{minipage}[t]{0.74\columnwidth}\raggedright
+Annual proportion of immature crab which die off.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.20\columnwidth}\centering
+\(M^{mat}\)\strut
+\end{minipage} & \begin{minipage}[t]{0.74\columnwidth}\raggedright
+Annual proportion of mature crab which die off.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.20\columnwidth}\centering
+\(p_{k,y}^{skip}\)\strut
+\end{minipage} & \begin{minipage}[t]{0.74\columnwidth}\raggedright
+Annual proportion of immature crab which skip a moult.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.20\columnwidth}\centering
+\(p_{k,y}^{mat}\)\strut
+\end{minipage} & \begin{minipage}[t]{0.74\columnwidth}\raggedright
+Annual proportion of immature crab which moult to maturity.\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\newpage
+
+\hypertarget{figures}{%
+\subsection{Figures}\label{figures}}
+
+\begin{figure}
+\centering
+\includegraphics{female model and length-frequencies 2010-2020.pdf}
+\caption{Fitted population model abundances for immature (red) and
+mature (blue) female snow crab. Jagged curves are observed
+length-frequencies.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{female trawl selectivity.png}
+\caption{Fitted selectivity curve for female snow crab}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{female moultring probability VIII to IX.png}
+\caption{Annual probability of immature instar VIII moulting to mature
+IX for female snow crab}
+\end{figure}
+
+\hypertarget{selectivity-plot}{%
+\section{Selectivity plot:}\label{selectivity-plot}}
+
+Size-selectivity curve showing the estimated proportion of female snow
+crab caught by the survey trawl from 2006 to 2020, based on the
+population model.
+
+\hypertarget{moulting-probability}{%
+\section{Moulting probability:}\label{moulting-probability}}
+
+Probability of the terminal moult to maturity by year for instar VIII in
+female snow crab, as estimated from the population model.
+
+\hypertarget{population-abundance-plot}{%
+\section{Population abundance plot:}\label{population-abundance-plot}}
+
+Eastimated abundance of immature and mature female snow crab by instar
+by year from the population model.
+
+\hypertarget{growth-models}{%
+\section{Growth models:}\label{growth-models}}
+
+\hypertarget{year-effect}{%
+\section{Year effect}\label{year-effect}}
+
+Estimated scale of year effects for female snow crab from the population
+model. Effects are scaled relative to 2020.
+
+\hypertarget{female-model-and-length-frequencies-2010-2020.pdf}{%
+\section{female model and length-frequencies
+2010-2020.pdf}\label{female-model-and-length-frequencies-2010-2020.pdf}}
+
+Estimated survey size-structured abundance for immature and adolescent
+(red lines) and new mature recruits (green lines) and total mature
+female snow crab (blue lines). Observed size-frequencies are shown as
+jagged lines following the same colour scheme.
+
+\end{document}
