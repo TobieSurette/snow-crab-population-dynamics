@@ -16,7 +16,7 @@ dev.off()
 
 # female model and length-frequencies 2010-2020.pdf
 clg()
-file <- paste0(sex(sex), "_length-frequencies_", sex(sex), " ",  min(years), "-", max(years), ".pdf")
+file <- paste0(sex(sex), "_size-frequencies ",  min(years), "-", max(years), ".pdf")
 pdf(file = file, width = 8.5, height = 11)
 p <- parameters
 m <- kronecker(matrix(1:n_year, ncol = 3), matrix(1, ncol = 5, nrow = 5))
@@ -120,8 +120,9 @@ dev.off()
 
 # Recruitment plot:
 clg()
-file <- paste0(sex(sex), "_recruitment_", min(years), "-", max(years), ".pdf")
+file <- paste0(sex(sex), ".recruitment.", min(years), "-", max(years), ".pdf")
 pdf(file = file, width = 7, height = 7)
+p <- parameters
 gbarplot(exp(p$log_n_imm_instar_0), years, grid = TRUE)
 mtext("Year", 1, 2.5, cex = 1.25)
 mtext("Abundance of instar IV", 2, 2.5, cex = 1.25)
@@ -198,7 +199,6 @@ abline(5.099, 0.071)
 #Prepubescent stage ɛ (from onset of PM to next prepubescent stage): CW i+1 = 1.246 CW i – 2.864
 #Prepubescent stage ɸ (from prepubescent stage ɛ to pubescent): CW i+1 = 0.828 CW i – 20.585
 #Pubescent to maturity: CW i+1 = 1.071 CW i – 5.099
-
 
 # Year effect
 clg()

@@ -86,14 +86,6 @@ obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = rand
 obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
 parameters <- update.parameters(parameters, obj, map = map)
 
-# Add year effect parameters:
-map <- update.map(map, free = c("log_sigma_year_effect"))
-parameters$log_year_effect[length(parameters$log_year_effect)] <- 0
-map$log_year_effect <- factor(c(1:(length(parameters$log_year_effect)-1 ), NA))
-obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = random, map = map)
-obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
-parameters <- update.parameters(parameters, obj, map = map)
-
 # Add mortality parameters:
 map <- update.map(map, free = c("logit_M_mat","logit_M_imm"))
 obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = random, map = map)
@@ -112,8 +104,22 @@ obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = rand
 obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
 parameters <- update.parameters(parameters, obj, map = map)
 
+# Add annual growth parameters:
+map <- update.map(map, free = c("mu_year_instar"))
+obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = random, map = map)
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
+parameters <- update.parameters(parameters, obj, map = map)
+
 # Add instar error parameter:
 map <- update.map(map, free = c("log_growth_error"))
+obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = random, map = map)
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
+parameters <- update.parameters(parameters, obj, map = map)
+
+# Add year effect parameters:
+map <- update.map(map, free = c("log_sigma_year_effect"))
+parameters$log_year_effect[length(parameters$log_year_effect)] <- 0
+map$log_year_effect <- factor(c(1:(length(parameters$log_year_effect)-1 ), NA))
 obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = random, map = map)
 obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
 parameters <- update.parameters(parameters, obj, map = map)
@@ -123,14 +129,6 @@ map <- update.map(map, free = c("delta_mat"))
 obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = random, map = map)
 obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 300))$par
 parameters <- update.parameters(parameters, obj, map = map)
-
-# Add annual growth parameters:
-map <- update.map(map, free = c("mu_year_instar"))
-obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_mat2",  random = random, map = map)
-obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
-parameters <- update.parameters(parameters, obj, map = map)
-
-
 
 # Add annual growth parameters:
 map <- update.map(map, free = "log_sigma_mu_year_instar")
