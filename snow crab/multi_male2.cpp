@@ -38,10 +38,13 @@ template<class Type> Type objective_function<Type>::operator()(){
    // Fishing selectivity parameters:
    PARAMETER(selectivity_x50_fishing);         // Size-at-50% selectivity for fishing.
    PARAMETER(log_selectivity_slope_fishing);   // Log-scale trawl selectivity slope for fishing.
-   PARAMETER(logit_fishing_effect_skp);       
-   PARAMETER(logit_fishing_effect_rec);
-   PARAMETER(logit_fishing_effect_res);
-  
+   PARAMETER(logit_fishing_effect_rec);        // Logit-scale fishing effect for mature recruits.
+   PARAMETER(logit_fishing_effect_res);        // Logit-scale fishing effect for mature residuals.
+
+   PARAMETER_VECTOR(logit_year_fishing_effect_rec); // Logit-scale year x fishing effect for mature recruits.
+   PARAMETER_VECTOR(logit_year_fishing_effect_res); // Logit-scale year x fishing effect for mature residuals.
+   PARAMETER(log_sigma_year_fishing_effect);      // Log-scale year x fishing effect error parameter (n_year-1).
+     
    // Moulting probability parameters:
    PARAMETER_VECTOR(logit_p_skp);              // Logit-scale skip-moulting probabilities (n_instar-1).
    PARAMETER_VECTOR(logit_p_mat);              // Logit-scale moult-to-maturity probabilities (n_instar-2).
@@ -164,12 +167,23 @@ template<class Type> Type objective_function<Type>::operator()(){
       for (int k = 0; k < (n_instar-2); k++){
          p_mat(k,y) = Type(1) / (Type(1) + exp(-logit_p_mat[k] - logit_p_mat_year[k * (n_year-1) + y]));
       }
-      p_mat(n_instar-2,y) = 1; // Second-to-last instar moults to maturity.
+      p_mat(n_instar-2,y) = Type(1); // Second-to-last instar moult to maturity.
    }
    
    // Mortality probabilities:
    Type M_imm = Type(1) / (Type(1) + exp(-logit_M_imm));         // Immature annual mortality.
    vector<Type> M_mat = Type(1) / (Type(1) + exp(-logit_M_mat)); // Mature annual mortality.
+ 
+   // Fishing selectivity parameter transforms:
+   Type selectivity_slope = exp(log_selectivity_slope);
+   Type selectivity_slope_fishing = exp(log_selectivity_slope_fishing);
+   v -= sum(dnorm(logit_year_fishing_effect_rec, Type(0), exp(log_sigma_year_fishing_effect), true));
+   v -= sum(dnorm(logit_year_fishing_effect_res, Type(0), exp(log_sigma_year_fishing_effect), true));
+   vector<Type> fishing_effect_rec = Type(1) / (Type(1) + exp(-logit_fishing_effect_rec - logit_year_fishing_effect_rec));
+   vector<Type> fishing_effect_res = Type(1) / (Type(1) + exp(-logit_fishing_effect_res - logit_year_fishing_effect_res));   
+   
+   //Type fishing_effect_rec = Type(1) / (Type(1) + exp(-logit_fishing_effect_rec));
+   //Type fishing_effect_res = Type(1) / (Type(1) + exp(-logit_fishing_effect_res));
    
    // Population dynamics equations:
    for (int k = 1; k < n_instar; k++){
@@ -181,31 +195,25 @@ template<class Type> Type objective_function<Type>::operator()(){
           n_skp(k,y) = (Type(1)-p_mat(k-1,y-1)) * p_skp[k-1] * (Type(1)-M_imm) * n_imm(k,y-1);   
           
           // Matures:
-          for (int l = 0; n < n_size; l++){
+          for (int l = 0; l < n_size; l++){
              // Define fishing size-selectivity curve for recruitment and residuals:
-             Type selectivity_rec = fishing_effect_rec / (Type(1) + exp(-selectivity_slope_fishing * (xu[l] - selectivity_x50_fishing)));   
-             Type selectivity_res = fishing_effect_res / (Type(1) + exp(-selectivity_slope_fishing * (xu[l] - selectivity_x50_fishing))); 
-             
+             Type selectivity_rec = fishing_effect_rec[y-1] / (Type(1) + exp(-selectivity_slope_fishing * (ux[l] - selectivity_x50_fishing)));
+             Type selectivity_res = fishing_effect_res[y-1] / (Type(1) + exp(-selectivity_slope_fishing * (ux[l] - selectivity_x50_fishing)));
+                
              // Mature recruitment:
-             n_mat(k,y,0,l) = (1-selectivity_rec) * 
+             n_mat(k,y,0,l) = (Type(1)-selectivity_rec) * 
                               (Type(1)-M_mat[0]) * 
-                              ((Type(1)-p_skp[k-1]) * p_mat(k-1,y-1) * n_imm(k-1,y-1) * n_skp(k-1,y-1)) *
+                              ((Type(1)-p_skp[k-1]) * p_mat(k-1,y-1) * n_imm(k-1,y-1) + n_skp(k-1,y-1)) *
                               (pnorm(ux[l] + delta_x / 2, mu_mat(k,y,0), sigma[k]) - 
-                               pnorm(ux[l] - delta_x / 2, mu_mat(k,y,0), sigma[k])) + 
+                               pnorm(ux[l] - delta_x / 2, mu_mat(k,y,0), sigma[k]));
          
              // Mature residual groups:
              for (int m = 1; m < 6; m++){
-                n_mat(k,y,m,l) = (1-selectivity_res) * (Type(1)-M_mat[1]) * n_mat(k,y-1,m-1,l); 
+                n_mat(k,y,m,l) = (Type(1)-selectivity_res) * (Type(1)-M_mat[1]) * n_mat(k,y-1,m-1,l); 
              }
          }
       }
    } 
-   
-   // Selectivity parameter transforms:
-   Type selectivity_slope = exp(log_selectivity_slope);
-   Type fishing_effect_rec = Type(1) / (Type(1) + exp(-logit_fishing_effect_rec));
-   Type fishing_effect_res = Type(1) / (Type(1) + exp(-logit_fishing_effect_res));
-   Type selectivity_slope_fishing = exp(log_selectivity_slope_fishing);
    
    // Year effects:
    v -= sum(dnorm(log_year_effect, Type(0), exp(log_sigma_year_effect), true));
@@ -245,16 +253,16 @@ template<class Type> Type objective_function<Type>::operator()(){
       // Loop over instars:
       for (int k = 0; k < n_instar; k++){
          // Recruitment
-         eta_rec[i] += n_mat(k, year_mat[i], 0, x_mat[i])
+         eta_rec[i] += n_mat(k, year_mat[i], 0, x_mat[i]);
       
          // Cumulate recruitment and residual classes:
          for (int m = 1; m < 6; m++){
-            eta_res[i] += n_mat(k, year_mat[i], m, x_mat[i])
+            eta_res[i] += n_mat(k, year_mat[i], m, x_mat[i]);
          }
          
          // Add year effects and selectivity adjustments:
-         eta_rec[i] += year_effect[year_mat[i]] * selectivity * (1-selectivity_rec) * eta_rec[i];
-         eta_res[i] += year_effect[year_mat[i]] * selectivity * (1-selectivity_res) * eta_res[i];
+         eta_rec[i] += year_effect[year_mat[i]] * selectivity * eta_rec[i];
+         eta_res[i] += year_effect[year_mat[i]] * selectivity * eta_res[i];
          
          // Calculate total matures:
          eta_mat[i] += eta_rec[i] + eta_res[i];
@@ -284,7 +292,6 @@ template<class Type> Type objective_function<Type>::operator()(){
    REPORT(M_mat);
    REPORT(year_effect);
    REPORT(selectivity_slope);
-   REPORT(fishing_effect_skp);
    REPORT(fishing_effect_rec);
    REPORT(fishing_effect_res);
    REPORT(selectivity_slope_fishing);
