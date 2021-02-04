@@ -7,10 +7,12 @@ p <- parameters
 t <- seq(0, 140, len = 1000)
 p <- 1 / (1 + exp(-exp(p$log_selectivity_slope)  * (t - p$selectivity_x50)));
 plot(t, p, type = "l", ylim = c(0, 1), yaxs = "i", 
-     lwd = 2, col = "blue", xaxs = "i", xlab = "", ylab = "", xlim = xlim)
+     lwd = 2, col = "blue", xaxs = "i", xlab = "", ylab = "", xlim = xlim, xaxt = "n", yaxt = "n")
 grid()
-mtext("Carapace width(mm)", 1, 2.5, cex = 1.25) 
-mtext("Trawl selectivity", 2, 2.5, cex = 1.25) 
+axis(1, cex.axis = 1.25)
+axis(2, cex.axis = 1.25)
+mtext("Carapace width(mm)", 1, 2.5, cex = 1.5) 
+mtext("Trawl selectivity", 2, 2.5, cex = 1.5) 
 box()
 dev.off()
 

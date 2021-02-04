@@ -85,7 +85,7 @@ parameters$logit_year_fishing_effect_res <- rep(0, length(years)-1)
 parameters$log_sigma_year_fishing_effect <- -2
 parameters$logit_fishing_effect_res <- -10#-0.2
 parameters$logit_fishing_effect_rec <- -10#-1.5
-parameters$selectivity_x50_fishing <- 95
+parameters$selectivity_x50_fishing <- 97
 parameters$logit_p_mat_year <- 0 * parameters$logit_p_mat_year
 parameters$log_sigma_p_mat_year <- 0
 parameters$logit_p_mat <- c(-10, -10, -10, -10,  -7,  -3,  -1,  0)
@@ -105,16 +105,18 @@ data.vars <- names(data)[-grep("(rec)|(res)|(skp)", names(data))]
 parameters <- parameters[parameters.cpp("multi_male2.cpp")]
 map <- lapply(parameters, function(x) factor(rep(NA, length(x))))
 
+parameters[unlist(lapply(map, function(x) return(!all(is.na(x)))))]
+       
 # Estimate initial abundance parameters:
 map <- update.map(map, free = c("log_n_imm_instar_0", "log_n_imm_year_0", "log_n_mat_instar_0", "log_sigma_n_imm_instar_0"))
 obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_male2",  random = random, map = map)
-obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 1000))$par
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 1500))$par
 parameters <- update.parameters(parameters, obj, map = map)
 
 # Add moult to maturity parameters:
 map <- update.map(map, free = c("logit_p_mat"))
 obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_male2",  random = random, map = map)
-obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 2000))$par
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 1000))$par
 parameters <- update.parameters(parameters, obj, map = map)
 
 # Add fishing selectivity x50 parameter:
@@ -141,16 +143,10 @@ obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_male2",  random = ran
 obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 2000))$par
 parameters <- update.parameters(parameters, obj, map = map)
 
-# Add fishing selectivity by year parameters:
-map <- update.map(map, free = c("logit_year_fishing_effect_rec", "logit_year_fishing_effect_res", "log_sigma_year_fishing_effect"))
-obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_male2",  random = random, map = map)
-obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
-parameters <- update.parameters(parameters, obj, map = map)
-
 # Add moult to maturity parameters by year:
 map <- update.map(map, free = c("logit_p_mat_year", "log_sigma_p_mat_year"))
 obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_male2",  random = random, map = map)
-obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 2000))$par
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 1500))$par
 parameters <- update.parameters(parameters, obj, map = map)
 
 # Add year effect parameters:
@@ -168,11 +164,18 @@ obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 1000))$par
 parameters <- update.parameters(parameters, obj, map = map)
 
 # Add skip-moulting probability parameters:
-map$logit_p_skp <- as.factor(c(rep(NA, 5), 1:(length(parameters$logit_p_skp)-5)))
-#map <- update.map(map, free = c("logit_p_skp"))
+map$logit_p_skp <- as.factor(c(rep(NA, 5), 1:(length(parameters$logit_p_skp)-6), NA))
+parameters$logit_p_skp[6:9] <- -2
 obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_male2",  random = random, map = map)
-obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 1500))$par
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 2000))$par
 parameters <- update.parameters(parameters, obj, map = map)
+
+# Add fishing selectivity by year parameters:
+map <- update.map(map, free = c("logit_year_fishing_effect_rec", "logit_year_fishing_effect_res", "log_sigma_year_fishing_effect"))
+obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_male2",  random = random, map = map)
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
+parameters <- update.parameters(parameters, obj, map = map)
+
 
 # Add delta_mat:
 map <- update.map(map, free = c("delta_mat"))
@@ -183,7 +186,7 @@ parameters <- update.parameters(parameters, obj, map = map)
 # Add annual growth parameters:
 map <- update.map(map, free = c("mu_year_instar"))
 obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_male2",  random = random, map = map)
-obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 2000))$par
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 300))$par
 parameters <- update.parameters(parameters, obj, map = map)
 
 # Add some growth parameters:

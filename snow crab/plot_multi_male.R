@@ -1,3 +1,21 @@
+# Recruitment plot:
+clg()
+file <- paste0(sex(sex), "_recruitment_", min(years), "-", max(years), ".pdf")
+pdf(file = file, width = 7, height = 7)
+gbarplot(exp(parameters$log_n_imm_instar_0), years, grid = TRUE)
+mtext("Year", 1, 2.5, cex = 1.25)
+mtext("Abundance of instar IV", 2, 2.5, cex = 1.25)
+dev.off()
+
+# Year effect
+clg()
+year_effect <- obj$report()$year_effect
+names(year_effect) <- years
+gbarplot(year_effect, xaxt = "n", grid = TRUE, xaxs = "i")
+hline(1, col = "red", lwd = 2)
+mtext("Year", 1, 2.5, cex = 1.25)
+mtext("Relative catchability", 2, 2.25, cex = 1.25)
+axis(1, at = seq(2006, 2020, by = 2))
 
 # Trawl selectivity plot:
 clg()
@@ -29,7 +47,7 @@ for (i in 1:n_year){
    lines(xx, yy_res, yaxs = "i", type = "l", lwd = 2, col = "blue")
 }
 
-# female model and length-frequencies 2010-2020.pdf
+# Survey length-frequencies and model fit:
 clg()
 file <- paste0(sex(sex), "_length-frequencies ",  min(years), "-", max(years), ".pdf")
 pdf(file = file, width = 8.5, height = 11)
@@ -64,11 +82,12 @@ for (i in 1:length(years)){
    #vline(obj$report()$mu_mat[6:n_instar,i,1], lty = "dashed", col = "blue")
    
    # Year label:
-   text(par("usr")[1] + 0.15 * diff(par("usr")[1:2]),
+   text(par("usr")[1] + 0.90 * diff(par("usr")[1:2]),
         par("usr")[3] + 0.85 * diff(par("usr")[3:4]), years[i], cex = 1.25)
    box()
    
-   vline(95, col = "red", lwd = 2)
+   vline(95, col = "red", lwd = 1, lty = "dashed")
+   
    # Axes with labels:
    if (i %in% ((n_year/3)*(1:3))) axis(1)
    if (i %in% 1:(n_year/3)) axis(2)
@@ -132,15 +151,6 @@ for (i in 1:length(instars)) points(years, obj$report()$mu_imm[i, ], pch = 21, b
 hline(apply(obj$report()$mu_imm, 1, median), col = "red", lty = "dashed")
 box()
 axis(4, at = apply(obj$report()$mu_imm, 1, median), labels = as.character(as.roman(4:(n_instar+3))))
-dev.off()
-
-# Recruitment plot:
-clg()
-file <- paste0(sex(sex), "_recruitment_", min(years), "-", max(years), ".pdf")
-pdf(file = file, width = 7, height = 7)
-gbarplot(exp(parameters$log_n_imm_instar_0), years, grid = TRUE)
-mtext("Year", 1, 2.5, cex = 1.25)
-mtext("Abundance of instar IV", 2, 2.5, cex = 1.25)
 dev.off()
 
 # Moulting probability:
@@ -215,15 +225,7 @@ abline(5.099, 0.071)
 #Prepubescent stage ɸ (from prepubescent stage ɛ to pubescent): CW i+1 = 0.828 CW i – 20.585
 #Pubescent to maturity: CW i+1 = 1.071 CW i – 5.099
 
-# Year effect
-clg()
-year_effect <- obj$report()$year_effect
-names(year_effect) <- years
-gbarplot(year_effect, xaxt = "n", grid = TRUE, xaxs = "i")
-hline(1, col = "red", lwd = 2)
-mtext("Year", 1, 2.5, cex = 1.25)
-mtext("Relative catchability", 2, 2.25, cex = 1.25)
-axis(1, at = seq(2006, 2020, by = 2))
+
 
 # Mortality:
 gbarplot(obj$report()$M_mat)
