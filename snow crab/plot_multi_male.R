@@ -39,14 +39,20 @@ r <- obj$report()
 x50 <- parameters$selectivity_x50_fishing
 s <- exp(parameters$log_selectivity_slope_fishing) 
 xx <- seq(60, 120, len = 1000)
-plot(c(60, 120), c(0, 1.01), yaxs = "i", type = "n")
+plot(c(60, 120), c(0, 1.01), yaxs = "i", type = "n", ylab = "", xlab = "", cex.axis = 1.25)
+grid()
+legend("bottomleft", legend = c("new matures", "old matures"), 
+       col = c("forestgreen", "blue"), lwd = 2, cex = 1.5)
 for (i in 1:n_year){
    yy_rec = 1 - r$fishing_effect_rec[i] / (1 + exp(-s * (xx - x50)))
    yy_res = 1 - r$fishing_effect_res[i] / (1 + exp(-s * (xx - x50)))
    lines(xx, yy_rec, lwd = 2, col = "forestgreen")
    lines(xx, yy_res, yaxs = "i", type = "l", lwd = 2, col = "blue")
 }
-
+mtext("Carapace width (mm)", 1, 3, cex = 1.5)
+mtext("Proportion", 2, 2.5, cex = 1.5)
+   
+   
 # Survey length-frequencies and model fit:
 clg()
 file <- paste0(sex(sex), "_length-frequencies ",  min(years), "-", max(years), ".pdf")

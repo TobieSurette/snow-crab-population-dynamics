@@ -154,7 +154,7 @@ map <- update.map(map, free = c("log_sigma_year_effect"))
 parameters$log_year_effect[length(parameters$log_year_effect)] <- 0
 map$log_year_effect <- factor(c(1:(length(parameters$log_year_effect)-1 ), NA))
 obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_male2",  random = random, map = map)
-obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 1500))$par
 parameters <- update.parameters(parameters, obj, map = map)
 
 # Add mortality parameters:
@@ -165,13 +165,19 @@ parameters <- update.parameters(parameters, obj, map = map)
 
 # Add skip-moulting probability parameters:
 map$logit_p_skp <- as.factor(c(rep(NA, 5), 1:(length(parameters$logit_p_skp)-6), NA))
-parameters$logit_p_skp[6:9] <- -2
+#parameters$logit_p_skp[6:9] <- -2
 obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_male2",  random = random, map = map)
 obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 2000))$par
 parameters <- update.parameters(parameters, obj, map = map)
 
-# Add fishing selectivity by year parameters:
-map <- update.map(map, free = c("logit_year_fishing_effect_rec", "logit_year_fishing_effect_res", "log_sigma_year_fishing_effect"))
+# Add fishing selectivity recruitment by year parameters:
+map <- update.map(map, free = c("logit_year_fishing_effect_rec", "log_sigma_year_fishing_effect"))
+obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_male2",  random = random, map = map)
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 1000))$par
+parameters <- update.parameters(parameters, obj, map = map)
+
+# Add fishing selectivity residual by year parameters:
+map <- update.map(map, free = c("logit_year_fishing_effect_res", "log_sigma_year_fishing_effect"))
 obj <- MakeADFun(data[data.vars], parameters, DLL = "multi_male2",  random = random, map = map)
 obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
 parameters <- update.parameters(parameters, obj, map = map)
