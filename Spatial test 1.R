@@ -11,12 +11,13 @@ p$y <- p$latitude
 p <- as.polygon(list(p))
 
 # Load data:
-x <- read.scsset(year = 2020, survey = "regular", valid = 1)
-b <- read.scsbio(2020, category = "MM")
-import(x, fill = 0) <- catch(b, category = "MM")
-names(x) <- gsub("MM", "n", names(x))
+x <- read.scsset(year = 2021, survey = "regular", valid = 1)
+b <- read.scsbio(2021)
+import(x, fill = 0) <- catch(b, category = "COM")
+names(x) <- gsub("COM", "n", names(x))
 x$depth <- round(depth(lon(x), lat(x)),1)
 x$log.depth <- log(x$depth)
+x$fixed <- as.numeric(x$station.type == "fixed")
 
 # Assemble data:
 data <- cbind(x, deg2km(lon(x), lat(x)))
@@ -24,9 +25,12 @@ data$x <- round(data$x)
 data$y <- round(data$y)
 data$pos <- numFactor(data$x, data$y)
 data$group <- factor(rep(1, nrow(data)))
+data$fixed <- x$fixed
+data$fixed <- x$fixed
 
 # Fit model:
-model <- glmmTMB(n ~ 1 + log.depth + I(log.depth^2) + exp(pos + 0 | group), data = data, family = nbinom2)
+model <- glmmTMB(n ~ 1 + fixed + log.depth + I(log.depth^2) + exp(pos + 0 | group) + offset(log(swept.area)), 
+                 data = data, family = nbinom2)
 
 # Predictions:
 xx <- seq(min(data$x), max(data$x), by = 2)
@@ -38,6 +42,7 @@ newdata$group <- factor(rep(1, nrow(newdata)))
 newdata <- cbind(newdata, km2deg(newdata$x, newdata$y))
 newdata$depth <- round(depth(newdata$longitude, newdata$latitude), 1)
 newdata$log.depth <- log(newdata$depth)
+newdata$swept.area <- 1
 newdata$n <- NA
 ix <- which(in.polygon(p, newdata$longitude, newdata$latitude))
 
@@ -57,7 +62,5 @@ while (!stop){
 n <- newdata$n
 dim(n) <- c(length(xx), length(yy))
 
-image(n, main = "Reconstruction")
-
-
+image(n, main = "Reconstruction", col = rev(terrain.colors(100)))
 
