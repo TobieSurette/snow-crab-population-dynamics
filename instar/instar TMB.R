@@ -15,7 +15,6 @@ s$group <- match(s[key(s)], unique(s[key(s)]))-1
 b$group <- s$group[match(b[key(s)], s[key(s)])]
 b$year <- year(b)
 
-
 # recommendation: Group by grid for testing.
 
 # Define maturity stages:
@@ -24,6 +23,11 @@ b$maturity[which(!is.na(b$carapace.width) & (b$sex == 2) & (b$carapace.width <= 
 b$maturity[which(!is.na(b$carapace.width) & (b$carapace.width >= 28) & (b$carapace.width <= 80) & (b$sex == 2) & !is.mature(b) & is.pubescent.scsbio(b))] <- "pubescent"
 b$maturity[which(!is.na(b$carapace.width) & (b$carapace.width >= 36) & (b$carapace.width <= 95) & (b$sex == 2) & is.primiparous.scsbio(b))] <- "mature"
 b <- b[b$maturity != "", ]
+
+tmp <- aggregate(b$carapace.width, by = b["group"], length)
+
+b <- b[b$group %in% tmp[rev(order(tmp$x))[1:100], "group"], ]
+b$group <- match(b$group, sort(unique(b$group)))
 
 tab <- NULL
 for (i in 1:length(years)){
@@ -69,26 +73,73 @@ parameters <- list(mu_imm_0 = 0.7930157,             # Size of immature first in
                    logit_p_imm_global = rep(0,5),
                    logit_p_pub_global = rep(0,2),
                    logit_p_mat_global = rep(0,2),
-                   delta_logit_p_imm = matrix(0, nrow = data$n_group, ncol = 5),
-                   delta_logit_p_pub = matrix(0, nrow = data$n_group, ncol = 2),
-                   delta_logit_p_mat = matrix(0, nrow = data$n_group, ncol = 2),
-                   log_sigma_delta_logit_p_imm = 0,
-                   log_sigma_delta_logit_p_pub = 0,
-                   log_sigma_delta_logit_p_mat = 0) 
+                   delta_logit_p_imm = matrix(2*runif(data$n_group * 5)-1, nrow = data$n_group, ncol = 5),
+                   delta_logit_p_pub = matrix(2*runif(data$n_group * 2)-1, nrow = data$n_group, ncol = 2),
+                   delta_logit_p_mat = matrix(2*runif(data$n_group * 2)-1, nrow = data$n_group, ncol = 2),
+                   log_sigma_delta_logit_p_imm = -1,
+                   log_sigma_delta_logit_p_pub = -1,
+                   log_sigma_delta_logit_p_mat = -1) 
+
+# Define functions:
+free <- function(x, p){
+   if (missing(p)){
+      d <- dim(x) 
+      v <- as.factor(1:length(x))
+      dim(v) <- d
+      return(v)
+   }
+   p <- p[p %in% names(x)]
+   for (i in 1:length(p)) x[[p[i]]] <- free(x[[p[i]]])
+   return(x)
+}
+
+update <- function(x, p, r){
+   if (!missing(p)){
+       str <- unique(names(p))
+       for (i in 1:length(str)){
+          d <- dim(x[[str[i]]])
+          x[[str[i]]] <- p[names(p) == str[i]]
+          dim(x[[str[i]]]) <- d
+       }
+   }
+   if (!missing(r)){
+       str <- unique(names(r))
+       for (i in 1:length(str)){
+          d <- dim(x[[str[i]]])
+          x[[str[i]]] <- r[names(r) == str[i]]
+          dim(x[[str[i]]]) <- d
+       }
+   }
+  return(x)
+}
+map <- function(x){
+   v <- lapply(x, function(x) as.factor(NA * x))
+   for (i in 1:length(x)) dim(v[[i]]) <- dim(x[[i]])
+   return(v)
+}
+  
+map <- map(parameters)
 
 # Define set of random variables:
 random <- c("delta_mu_imm", "delta_mu_pub", "delta_mu_mat", "delta_logit_p_imm", "delta_logit_p_pub", "delta_logit_p_mat")
 
-# Create TMB object:
-obj <- MakeADFun(data = data, 
-                 parameters = parameters, 
-                 random = random,
-                 DLL = "instar")
+# Fit global proportions:
+map <- free(map, c("logit_p_imm_global", "logit_p_pub_global", "logit_p_mat_global"))
+obj <- MakeADFun(data = data, parameters = parameters, map = map, DLL = "instar")
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 2000))$par
+parameters <- update(parameters, obj$par)
 
-# Fit first:
-logit_p_imm_global
-logit_p_pub_global
-logit_p_mat_global
+# Fit group proportions:
+map <- free(map, c("delta_logit_p_imm", "log_sigma_delta_logit_p_imm", 
+                   "delta_logit_p_pub", "log_sigma_delta_logit_p_pub",
+                   "delta_logit_p_mat", "log_sigma_delta_logit_p_mat"))
+obj <- MakeADFun(data = data, parameters = parameters, map = map, DLL = "instar")
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 10000))$par
+parameters <- update(parameters, obj$par)
+
+rep <- sdreport(obj)
+summary(rep, "random") 
+parameters <- update(parameters, obj$par)
 
 # Fit second:
 log_sigma 

@@ -154,19 +154,19 @@ template<class Type> Type objective_function<Type>::operator()(){
    }  
    for (int i = 0; i < n_group; i++){
       // Immature:
-      p_imm(i,3) = 1 / (1 + sum_logit_p_imm[i]);
+      p_imm(i,3) = 1 / (1 + sum_logit_p_imm[i]);   // First immature instar in the survey.
       for (int j = 4; j < 9; j++){
          p_imm(i,j) = exp(logit_p_imm(i,j-4)) / (1 + sum_logit_p_imm[i]); 
       }
       
       // Pubescent:
-      p_pub(i,7) = 1 / (1 + sum_logit_p_pub[i]);
+      p_pub(i,7) = 1 / (1 + sum_logit_p_pub[i]);  // First pubescent instar.
       for (int j = 8; j < 10; j++){
          p_pub(i,j) = exp(logit_p_pub(i,j-8)) / (1 + sum_logit_p_pub[i]); 
       }
       
       // Mature:
-      p_mat(i,8) = 1 / (1 + sum_logit_p_mat[i]);
+      p_mat(i,8) = 1 / (1 + sum_logit_p_mat[i]);  // First mature instar.
       for (int j = 9; j < 11; j++){
          p_mat(i,j) = exp(logit_p_mat(i,j-9)) / (1 + sum_logit_p_mat[i]); 
       }
