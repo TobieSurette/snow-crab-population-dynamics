@@ -135,11 +135,21 @@ map <- free(map, c("delta_logit_p_imm", "log_sigma_delta_logit_p_imm",
 obj <- MakeADFun(data = data, parameters = parameters, random = random, map = map, DLL = "instar")
 obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 1000))$par
 parameters <- update(parameters, obj$par)
-
 rep <- sdreport(obj)
-summary(rep, "random") 
-parameters <- update(parameters, summary(rep, "random")[,])
+parameters <- update(parameters, summary(rep, "random")[,1])
 
-# Fit second:
-log_sigma 
+# Instar classification probabilities:
+r <- obj$report()
+p <- apply(r$p_pub, 2, mean)
+sigma <- apply(r$sigma_pub, 2, mean)
+mu <- apply(r$mu_pub, 2, mean)
+
+x <- seq(0, 5, len = 1000)
+d <- rep(0, length(x))
+for (i in 1:length(mu)) d <- d + p[i] * dnorm(x, mu[i], sigma[i])
+gbarplot(table(round(log(b$carapace.width[b$maturity == "pubescent"]), 2)))
+lines(x, 100*d)
+
+
+
 
