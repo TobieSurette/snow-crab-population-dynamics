@@ -47,9 +47,7 @@ template<class Type> Type objective_function<Type>::operator()(){
    PARAMETER_MATRIX(delta_logit_p_imm); 
    PARAMETER_MATRIX(delta_logit_p_pub); 
    PARAMETER_MATRIX(delta_logit_p_mat); 
-   PARAMETER(log_sigma_delta_logit_p_imm); 
-   PARAMETER(log_sigma_delta_logit_p_pub);
-   PARAMETER(log_sigma_delta_logit_p_mat);
+   PARAMETER(log_sigma_delta_logit_p); 
     
    // Vector sizes:      
    int n_instar_imm = logit_p_imm_global.size() + 1;
@@ -96,26 +94,26 @@ template<class Type> Type objective_function<Type>::operator()(){
    matrix<Type> sigma_mat(n_group,n_instar);
    for (int i = 0; i < n_group; i++){
       for (int j = 0; j < n_instar; j++){
-         sigma_imm(i,j) = exp(log_sigma);;
-         sigma_pub(i,j) = exp(log_sigma);;
-         sigma_mat(i,j) = exp(log_sigma);;
+         sigma_imm(i,j) = exp(log_sigma);
+         sigma_pub(i,j) = exp(log_sigma);
+         sigma_mat(i,j) = exp(log_sigma);
       }
    }     
 
    // Instar proportion effects:
    for (int i = 0; i < n_group; i++){
       for (int j = 0; j < (n_instar_imm-1); j++){
-         v -= dnorm(delta_logit_p_imm(i,j), Type(0), exp(log_sigma_delta_logit_p_imm), true);  // Immature. 
+         v -= dnorm(delta_logit_p_imm(i,j), Type(0), exp(log_sigma_delta_logit_p), true);  // Immature. 
       }     
    } 
    for (int i = 0; i < n_group; i++){
       for (int j = 0; j < (n_instar_pub-1); j++){
-         v -= dnorm(delta_logit_p_pub(i,j), Type(0), exp(log_sigma_delta_logit_p_pub), true);  // Pubescent. 
+         v -= dnorm(delta_logit_p_pub(i,j), Type(0), exp(log_sigma_delta_logit_p), true);  // Pubescent. 
       }     
    } 
    for (int i = 0; i < n_group; i++){
       for (int j = 0; j < (n_instar_mat-1); j++){
-         v -= dnorm(delta_logit_p_mat(i,j), Type(0), exp(log_sigma_delta_logit_p_mat), true);  // Mature. 
+         v -= dnorm(delta_logit_p_mat(i,j), Type(0), exp(log_sigma_delta_logit_p), true);  // Mature. 
       }     
    } 
    

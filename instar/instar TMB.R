@@ -1,4 +1,5 @@
 library(gulf.data)
+library(gulf.graphics)
 library(TMB)
 
 # Compile TMB model:
@@ -19,15 +20,15 @@ b$year <- year(b)
 
 # Define maturity stages:
 b$maturity <- ""
-b$maturity[which(!is.na(b$carapace.width) & (b$sex == 2) & (b$carapace.width <= 70) & !is.mature(b) & !is.pubescent.scsbio(b))] <- "immature"
+b$maturity[which(!is.na(b$carapace.width) & (b$sex == 2) & (b$carapace.width >= 9) & (b$carapace.width <= 70) & !is.mature(b) & !is.pubescent.scsbio(b))] <- "immature"
 b$maturity[which(!is.na(b$carapace.width) & (b$carapace.width >= 28) & (b$carapace.width <= 80) & (b$sex == 2) & !is.mature(b) & is.pubescent.scsbio(b))] <- "pubescent"
 b$maturity[which(!is.na(b$carapace.width) & (b$carapace.width >= 36) & (b$carapace.width <= 95) & (b$sex == 2) & is.primiparous.scsbio(b))] <- "mature"
 b <- b[b$maturity != "", ]
 
-tmp <- aggregate(b$carapace.width, by = b["group"], length)
-
-b <- b[b$group %in% tmp[rev(order(tmp$x))[1:100], "group"], ]
-b$group <- match(b$group, sort(unique(b$group)))
+# Sub-sample for testing:
+#tmp <- aggregate(b$carapace.width, by = b["group"], length)
+#b <- b[b$group %in% tmp[rev(order(tmp$x))[1:100], "group"], ]
+#b$group <- match(b$group, sort(unique(b$group)))
 
 tab <- NULL
 for (i in 1:length(years)){
@@ -57,12 +58,12 @@ data <- list(x_imm = tab$cw[tab$maturity == "immature"],
 
 # Define parameters:
 parameters <- list(mu_imm_0 = 0.7930157,             # Size of immature first instar.
-                   a_imm = 0.890443829,              # Slope parameter for immature growth.
-                   b_imm = 0.645895530,              # Intercept parameter for immature growth.
-                   a_pub = 0.663637366,              # Slope parameter for pubescent growth.
-                   b_pub = 1.515007633,              # Intercept parameter for pubescent growth.
-                   a_mat = 1.040998406,              # Slope parameter for mature growth.
-                   b_mat = 0.004727189,              # Intercept parameter for mature growth.   
+                   a_imm    = 0.8904438,             # Slope parameter for immature growth.
+                   b_imm    = 0.6458955,             # Intercept parameter for immature growth.
+                   a_pub    = 0.6636373,             # Slope parameter for pubescent growth.
+                   b_pub    = 1.5150076,             # Intercept parameter for pubescent growth.
+                   a_mat    = 1.0409984,             # Slope parameter for mature growth.
+                   b_mat    = 0.0047271,             # Intercept parameter for mature growth.   
                    log_sigma_delta_mu_imm = 0,
                    log_sigma_delta_mu_pub = 0,
                    log_sigma_delta_mu_mat = 0,
@@ -76,9 +77,7 @@ parameters <- list(mu_imm_0 = 0.7930157,             # Size of immature first in
                    delta_logit_p_imm = matrix(2*runif(data$n_group * 5)-1, nrow = data$n_group, ncol = 5),
                    delta_logit_p_pub = matrix(2*runif(data$n_group * 2)-1, nrow = data$n_group, ncol = 2),
                    delta_logit_p_mat = matrix(2*runif(data$n_group * 2)-1, nrow = data$n_group, ncol = 2),
-                   log_sigma_delta_logit_p_imm = -1,
-                   log_sigma_delta_logit_p_pub = -1,
-                   log_sigma_delta_logit_p_mat = -1) 
+                   log_sigma_delta_logit_p = 1) 
 
 # Define functions:
 free <- function(x, p){
@@ -133,13 +132,13 @@ parameters <- update(parameters, obj$par)
 map <- free(map, c("delta_logit_p_imm", "log_sigma_delta_logit_p_imm", 
                    "delta_logit_p_pub", "log_sigma_delta_logit_p_pub",
                    "delta_logit_p_mat", "log_sigma_delta_logit_p_mat"))
-obj <- MakeADFun(data = data, parameters = parameters, map = map, DLL = "instar")
-obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 10000))$par
+obj <- MakeADFun(data = data, parameters = parameters, random = random, map = map, DLL = "instar")
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 1000))$par
 parameters <- update(parameters, obj$par)
 
 rep <- sdreport(obj)
 summary(rep, "random") 
-parameters <- update(parameters, obj$par)
+parameters <- update(parameters, summary(rep, "random")[,])
 
 # Fit second:
 log_sigma 
