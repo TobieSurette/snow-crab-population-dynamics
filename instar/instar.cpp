@@ -105,17 +105,17 @@ template<class Type> Type objective_function<Type>::operator()(){
    // Instar proportion effects:
    for (int i = 0; i < n_group; i++){
       for (int j = 0; j < (n_instar_imm-1); j++){
-         v -= dnorm(delta_logit_p_imm(i,j), Type(0), exp(log_sigma_delta_logit_p_imm));  // Immature. 
+         v -= dnorm(delta_logit_p_imm(i,j), Type(0), exp(log_sigma_delta_logit_p_imm), true);  // Immature. 
       }     
    } 
    for (int i = 0; i < n_group; i++){
       for (int j = 0; j < (n_instar_pub-1); j++){
-         v -= dnorm(delta_logit_p_pub(i,j), Type(0), exp(log_sigma_delta_logit_p_pub));  // Pubescent. 
+         v -= dnorm(delta_logit_p_pub(i,j), Type(0), exp(log_sigma_delta_logit_p_pub), true);  // Pubescent. 
       }     
    } 
    for (int i = 0; i < n_group; i++){
       for (int j = 0; j < (n_instar_mat-1); j++){
-         v -= dnorm(delta_logit_p_mat(i,j), Type(0), exp(log_sigma_delta_logit_p_mat));  // Mature. 
+         v -= dnorm(delta_logit_p_mat(i,j), Type(0), exp(log_sigma_delta_logit_p_mat), true);  // Mature. 
       }     
    } 
    
