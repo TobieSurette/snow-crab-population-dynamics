@@ -34,12 +34,12 @@ b$group <- match(b$group, sort(unique(b$group)))
 
 tab <- NULL
 for (i in 1:length(years)){
-   if (years[i] < 1998) precision <- 1 else precision <- 0.1
-   bb <- b[b$year == years[i]  , ]
-   bb$cw <- round(bb$carapace.width, -log10(precision))
-   tmp <- aggregate(list(n = bb$carapace.width), by = bb[c("year", "tow.id", "group", "maturity", "cw")], length)
-   tmp$precision <- precision
-   tab <- rbind(tab, tmp)
+  if (years[i] < 1998) precision <- 1 else precision <- 0.1
+  bb <- b[b$year == years[i]  , ]
+  bb$cw <- round(bb$carapace.width, -log10(precision))
+  tmp <- aggregate(list(n = bb$carapace.width), by = bb[c("year", "tow.id", "group", "maturity", "cw")], length)
+  tmp$precision <- precision
+  tab <- rbind(tab, tmp)
 }
 
 # Define data:
@@ -79,46 +79,51 @@ parameters <- list(mu_imm_0 = 0.7930157,             # Size of immature first in
                    delta_logit_p_mat = matrix(2*runif(data$n_group * 2)-1, nrow = data$n_group, ncol = 2),
                    log_sigma_delta_logit_p = 1) 
 
+parameters$log_sigma_delta_mu = 0
+parameters$delta_mu_imm = rep(0, data$n_instar * data$n_group)
+parameters$delta_mu_pub = rep(0, data$n_instar * data$n_group)
+parameters$delta_mu_mat = rep(0, data$n_instar * data$n_group)
+
 # Define functions:
 free <- function(x, p){
-   if (missing(p)){
-      d <- dim(x) 
-      v <- as.factor(1:length(x))
-      dim(v) <- d
-      return(v)
-   }
-   if (any(!(p %in% names(x)))) cat(paste0("'", names(x)[!(p %in% names(x))], collapse = "','", "' are not variables.\n"))
-   p <- p[p %in% names(x)]
-   
-   for (i in 1:length(p)) x[[p[i]]] <- free(x[[p[i]]])
-   return(x)
+  if (missing(p)){
+    d <- dim(x) 
+    v <- as.factor(1:length(x))
+    dim(v) <- d
+    return(v)
+  }
+  if (any(!(p %in% names(x)))) cat(paste0("'", names(x)[!(p %in% names(x))], collapse = "','", "' are not variables.\n"))
+  p <- p[p %in% names(x)]
+  
+  for (i in 1:length(p)) x[[p[i]]] <- free(x[[p[i]]])
+  return(x)
 }
 
 update <- function(x, p, r){
-   if (!missing(p)){
-       str <- unique(names(p))
-       for (i in 1:length(str)){
-          d <- dim(x[[str[i]]])
-          x[[str[i]]] <- p[names(p) == str[i]]
-          dim(x[[str[i]]]) <- d
-       }
-   }
-   if (!missing(r)){
-       str <- unique(names(r))
-       for (i in 1:length(str)){
-          d <- dim(x[[str[i]]])
-          x[[str[i]]] <- r[names(r) == str[i]]
-          dim(x[[str[i]]]) <- d
-       }
-   }
+  if (!missing(p)){
+    str <- unique(names(p))
+    for (i in 1:length(str)){
+      d <- dim(x[[str[i]]])
+      x[[str[i]]] <- p[names(p) == str[i]]
+      dim(x[[str[i]]]) <- d
+    }
+  }
+  if (!missing(r)){
+    str <- unique(names(r))
+    for (i in 1:length(str)){
+      d <- dim(x[[str[i]]])
+      x[[str[i]]] <- r[names(r) == str[i]]
+      dim(x[[str[i]]]) <- d
+    }
+  }
   return(x)
 }
 map <- function(x){
-   v <- lapply(x, function(x) as.factor(NA * x))
-   for (i in 1:length(x)) dim(v[[i]]) <- dim(x[[i]])
-   return(v)
+  v <- lapply(x, function(x) as.factor(NA * x))
+  for (i in 1:length(x)) dim(v[[i]]) <- dim(x[[i]])
+  return(v)
 }
-  
+
 map <- map(parameters)
 
 # Define set of random variables:
@@ -151,39 +156,21 @@ parameters <- update(parameters, summary(rep, "random")[,1])
 
 save.image(file = "instar/results.rdata")
 
-# Fit complete model (adding instar means):
+# Add instar means:
 map <- free(map, c("delta_mu_imm", "delta_mu_pub", "delta_mu_mat", "log_sigma_delta_mu"))
-obj <- MakeADFun(data = data, parameters = parameters, random = random, DLL = "instar")
+obj <- MakeADFun(data = data, parameters = parameters, map = map, random = random, DLL = "instar")
 obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
 parameters <- update(parameters, obj$par)
 rep <- sdreport(obj)
 parameters <- update(parameters, summary(rep, "random")[,1])
 
-# Instar classification probabilities:
-r <- obj$report()
-
-# Generate random instar classification:
-instar <- function(x) return(which(t(rmultinom(1, size = 1, prob = x))[1, ] > 0))
-ix <- unlist(lapply(r$p_imm, instar))
-ip <- unlist(lapply(r$p_pub, instar))
-im <- unlist(lapply(r$p_mat, instar))
-
-# Plot instar classification results:
-plot(r$mu_imm[, 8])
-plot(r$mu_pub[, 8])
-
-
-
-p <- apply(r$p_pub, 2, mean)
-sigma <- apply(r$sigma_pub, 2, mean)
-mu <- apply(r$mu_pub, 2, mean)
-
-x <- seq(0, 5, len = 1000)
-d <- rep(0, length(x))
-for (i in 1:length(mu)) d <- d + p[i] * dnorm(x, mu[i], sigma[i])
-gbarplot(table(round(log(b$carapace.width[b$maturity == "pubescent"]), 2)))
-lines(x, 100*d)
-
+# Add instar standard errors:
+map <- free(map, c("delta_sigma_imm", "delta_sigma_pub", "delta_sigma_mat", "log_sigma_delta_sigma"))
+obj <- MakeADFun(data = data, parameters = parameters, map = map, random = random, DLL = "instar")
+obj$par <- optim(obj$par, obj$fn, control = list(trace = 3, maxit = 500))$par
+parameters <- update(parameters, obj$par)
+rep <- sdreport(obj)
+parameters <- update(parameters, summary(rep, "random")[,1])
 
 
 

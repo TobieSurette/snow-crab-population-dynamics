@@ -30,9 +30,7 @@ template<class Type> Type objective_function<Type>::operator()(){
    PARAMETER(b_mat);                         // Intercept parameter for mature growth.   
   
    // Instar size group-level random effects:
-   PARAMETER(log_sigma_delta_mu_imm);        // Immature error.
-   PARAMETER(log_sigma_delta_mu_pub);        // Pubescent error.
-   PARAMETER(log_sigma_delta_mu_mat);        // Mature error.
+   PARAMETER(log_sigma_delta_mu);            // Instar mean size error.
    PARAMETER_VECTOR(delta_mu_imm);           // Immature effect.
    PARAMETER_VECTOR(delta_mu_pub);           // Pubescent effect.
    PARAMETER_VECTOR(delta_mu_mat);           // Mature effect.
@@ -74,9 +72,9 @@ template<class Type> Type objective_function<Type>::operator()(){
    }
   
    // Instar size and error by group:
-   v -= sum(dnorm(delta_mu_imm, 0, exp(log_sigma_delta_mu_imm), true)); 
-   v -= sum(dnorm(delta_mu_pub, 0, exp(log_sigma_delta_mu_pub), true)); 
-   v -= sum(dnorm(delta_mu_mat, 0, exp(log_sigma_delta_mu_mat), true)); 
+   v -= sum(dnorm(delta_mu_imm, 0, exp(log_sigma_delta_mu), true)); 
+   v -= sum(dnorm(delta_mu_pub, 0, exp(log_sigma_delta_mu), true)); 
+   v -= sum(dnorm(delta_mu_mat, 0, exp(log_sigma_delta_mu), true)); 
    matrix<Type> mu_imm(n_group,n_instar);
    matrix<Type> mu_pub(n_group,n_instar);
    matrix<Type> mu_mat(n_group,n_instar);
@@ -153,7 +151,7 @@ template<class Type> Type objective_function<Type>::operator()(){
    for (int i = 0; i < n_group; i++){
       // Immature:
       p_imm(i,3) = 1 / (1 + sum_logit_p_imm[i]);   // First immature instar in the survey.
-      for (int j = 4; j < 9; j++){
+      for (int j = 4; j < 10; j++){
          p_imm(i,j) = exp(logit_p_imm(i,j-4)) / (1 + sum_logit_p_imm[i]); 
       }
       
