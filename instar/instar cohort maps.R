@@ -1,6 +1,6 @@
 
 
-year <- 2019
+year <- 1994
 
 m <- rbind(0, 0, cbind(0, kronecker(t(matrix(1:18, ncol = 6)), matrix(1, ncol = 6, nrow = 6)), 0), 0)
 clg()
