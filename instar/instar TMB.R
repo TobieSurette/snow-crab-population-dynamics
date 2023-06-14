@@ -306,7 +306,6 @@ mtext("Instar", 4, 2.0, cex = 1.25)
 box(col = "grey60")
 dev.off()
 
-
 # Generate instar abundance summary:
 tab <- aggregate(list(n_imm = b$maturity == "immature"), by = b[c("date", "tow.id", "group")], sum)
 tab$n_pub <- aggregate(list(n = b$maturity == "pubescent"), by = b[c("date", "tow.id", "group")], sum)$n
@@ -331,8 +330,27 @@ tab[fvars] <- 1000000 * tab[fvars] / repvec(tab$swept.area, ncol = length(fvars)
 tab <- tab[!is.na(tab$grid), ]
 tab$year <- year(tab)
 tab <- aggregate(tab[fvars], by = tab[c("date", "year", "tow.id", "group", "grid")], mean)
-        
+   
 
+plot(c(30,150), c(3, 11), type = "n")
+for (i in 1990:2022) points(tab$depth[tab$year == i], log(tab$n_instar_8_imm[tab$year == i]), pch = 21, bg = rainbow(31)[i-1989])
+
+
+exp(r$mu_imm_global + 0.5*r$sigma_imm[1,1]^2)
+sqrt((exp(r$sigma_imm[1,1]^2)-1) * exp(2*r$mu_imm_global + r$sigma_imm[1,1]^2))
+
+ii <- exp(r$mu_pub_global + 0.5*r$sigma_pub[1,1]^2)
+names(ii) <- 1:length(ii)
+jj <- sqrt((exp(r$sigma_pub[1,1]^2)-1) * exp(2*r$mu_pub_global + r$sigma_pub[1,1]^2))
+names(jj) <- 1:length(jj)
+
+ii <- exp(r$mu_mat_global + 0.5*r$sigma_mat[1,1]^2)
+names(ii) <- 1:length(ii)
+jj <- sqrt((exp(r$sigma_mat[1,1]^2)-1) * exp(2*r$mu_mat_global + r$sigma_mat[1,1]^2))
+names(jj) <- 1:length(jj)
+
+# 
+delta_mu_imm <- exp(r$mu_imm) - repvec(exp(r$mu_imm_global), nrow = nrow(r$mu_imm))
 
 # Generate instar size summary:
 colnames(r$mu_imm) <- paste0("mu_instar_", 1:ncol(r$mu_imm), "_imm")
