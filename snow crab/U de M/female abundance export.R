@@ -4,7 +4,7 @@ library(gulf.graphics)
 library(gulf.spatial)
 
 # Survey year:
-years <- 2000:2022
+years <- 2000:2023
 output <- "results/tables/"
 
 # Load kriging polygons:
