@@ -29,8 +29,8 @@ that is designed to dig into soft sediment.
 
 ### Modelling approach
 - Incorporate some **biological growth structure** into the mixture model.
-- Make use of the fact that sometimes, instars are more easily resolved at the local level than by analyzing an aggregate sample (say over a large area).
--	Build a hierarchical model which is able to model mixture models both at the local and global levels, leading to growth and instar abundance inferences at both the local and global level.
+- Make use of the fact that sometimes, instars are more **easily resolved at the local level** than by analyzing an aggregate sample (say over a large area).
+-	Build a **hierarchical model** which is able to model mixture models both at the local and global levels, leading to growth and instar abundance inferences at both the local and global level.
 
 ## References
 Marianne Alunno-Bruscia and Bernard Sainte-Marie. 1998. Abdomen allometry, ovary development, and growth of female snow crab, *Chionoecetes opilio* (Brachyura, Majidae), in the northwestern Gulf of St. Lawrence. Canadian Journal of Fisheries and Aquatic Sciences. 55(2): 459-477. https://doi.org/10.1139/f97-241.
