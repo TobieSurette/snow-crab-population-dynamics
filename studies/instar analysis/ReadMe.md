@@ -33,12 +33,12 @@ that is designed to dig into soft sediment.
 -	Build a hierarchical model which is able to model mixture models both at the local and global levels, leading to growth and instar abundance inferences at both the local and global level.
 
 ## References
-Marianne Alunno-Bruscia and Bernard Sainte-Marie. 1998. Abdomen allometry, ovary development, and growth of female snow crab, Chionoecetes opilio (Brachyura, Majidae), in the northwestern Gulf of St. Lawrence. Canadian Journal of Fisheries and Aquatic Sciences. 55(2): 459-477. https://doi.org/10.1139/f97-241.
+Marianne Alunno-Bruscia and Bernard Sainte-Marie. 1998. Abdomen allometry, ovary development, and growth of female snow crab, *Chionoecetes opilio* (Brachyura, Majidae), in the northwestern Gulf of St. Lawrence. Canadian Journal of Fisheries and Aquatic Sciences. 55(2): 459-477. https://doi.org/10.1139/f97-241.
 
-J. M. (Lobo) Orensanz, Billy Ernst, David A. Armstrong, Variation of Female Size and Stage at Maturity in Snow Crab (Chionoecetes Opilio) (Brachyura: Majidae) from the Eastern Bering Sea, Journal of Crustacean Biology, Volume 27, Issue 4, 1 October 2007, Pages 576–591, https://doi.org/10.1651/S-2790.1.
+J. M. (Lobo) Orensanz, Billy Ernst, David A. Armstrong. 2007. Variation of Female Size and Stage at Maturity in Snow Crab (*Chionoecetes opilio*) (Brachyura: Majidae) from the Eastern Bering Sea, Journal of Crustacean Biology, Volume 27, Issue 4(1), pp. 576–591, https://doi.org/10.1651/S-2790.1.
 
-Bernard Sainte-Marie, Sylvain Raymond, and Jean-Claude Brêthes. 1995. Growth and maturation of the benthic stages of male snow crab, Chionoecetes opilio (Brachyura: Majidae). Canadian Journal of Fisheries and Aquatic Sciences. 52(5): 903-924. https://doi.org/10.1139/f95-091
+Bernard Sainte-Marie, Sylvain Raymond, and Jean-Claude Brêthes. 1995. Growth and maturation of the benthic stages of male snow crab, *Chionoecetes opilio* (Brachyura: Majidae). Canadian Journal of Fisheries and Aquatic Sciences. 52(5): 903-924. https://doi.org/10.1139/f95-091.
 
-Weldon, W.F.R. 1893. On certain correlated variations in Carcinus moenas. Proceedings of the Royal Society of London 54. Pp. 318-329.
+Weldon, W.F.R. 1893. On certain correlated variations in *Carcinus moenas*. Proceedings of the Royal Society of London 54. pp. 318-329.
 
 
