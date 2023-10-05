@@ -1,4 +1,4 @@
-# Snow crab instar analsyis
+# Snow crab instar analysis
 
 ## Background:
 
