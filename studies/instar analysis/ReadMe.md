@@ -13,11 +13,10 @@ are estimated from fitting the model to a set of observed size data.
 However, there are issues with mixture models:
  - **identifiability** : a mixture fit to the data is invariant (i.e. does not change) when we exchange the component labels. So some ad hoc constraint is usually applied, such as
    forcing the component means to be increasing, needs to be applied to properly constrain the parameter space.
- - **multiple local solutions** : in that different solutions can give similar fits to the data. In addition, some of these are degenerate, e.g. shrinking the variance around a particular
+ - **multiple local solutions** : in that different solutions can give similar fits to the data. Some of these solutions are also degenerate, e.g. shrinking the variance around a particular
    observations yields arbitrarily high likelihood. 
- - Analytical solutions are not available, iterative methods must be used.
- - Other than a size-frequency analysis, there is no way to independently determine the instar stage, as there is no internal structure that we can i.e. there is no structure that we can
-   analyse and count the number of moults a crab has undergone.
+ - **instar stage is unknown** : Other than a size-frequency analysis, there is no way to independently determine the instar stage. There is no internal structure that we can analyse and count 
+   the number of benthic moults a crab has undergone. 
  - The **size overlap** between successive instars increases as they grow, leading to difficulties in resolving larger instars (generally starting at instar **IX** or larger).
    Size overlap also increases with maturition, leading to sill more variation in growth. Because of this, unstructured mixture models tend converge to converge to solutions which are
    at odds with biological knowledge or assumptions for larger instar sizes. 
@@ -29,13 +28,17 @@ Data used are from the southern Gulf of St. Lawrence (sGSL) **snow crab survey**
 that is designed to dig into soft sediment. 
 
 ### Modelling approach
-- However, while larger, maturing instars are harder to separate, they are often more clearly resolved in specific areas in specific years, i.e. global samples are aggregated of growth variations
-  which have occurred over space and time, but specific samples are subject to less growth variation. Although local sample sizes are generally not sufficient to perform an independent analysis.
--  Incorporate some structure  the mixture model which tailored for analyzing snow crab on a single sample, relatively fast.
-•	Extend the structure to account for hierarchical samples, applicable for a generating space and time-specific (i.e. inferences). 
+- Incorporate some **biological growth structure** into the mixture model.
+- Make use of the fact that sometimes, instars are more easily resolved at the local level than by analyzing an aggregate sample (say over a large area).
+-	Build a hierarchical model which is able to model mixture models both at the local and global levels, leading to growth and instar abundance inferences at both the local and global level.
 
 ## References
-•	Weldon, W.F.R. 1893. On certain correlated variations in Carcinus moenas. Proceedings of the Royal Society of London 54. Pp. 318-329.
+Marianne Alunno-Bruscia and Bernard Sainte-Marie. 1998. Abdomen allometry, ovary development, and growth of female snow crab, Chionoecetes opilio (Brachyura, Majidae), in the northwestern Gulf of St. Lawrence. Canadian Journal of Fisheries and Aquatic Sciences. 55(2): 459-477. https://doi.org/10.1139/f97-241.
 
+J. M. (Lobo) Orensanz, Billy Ernst, David A. Armstrong, Variation of Female Size and Stage at Maturity in Snow Crab (Chionoecetes Opilio) (Brachyura: Majidae) from the Eastern Bering Sea, Journal of Crustacean Biology, Volume 27, Issue 4, 1 October 2007, Pages 576–591, https://doi.org/10.1651/S-2790.1.
+
+Bernard Sainte-Marie, Sylvain Raymond, and Jean-Claude Brêthes. 1995. Growth and maturation of the benthic stages of male snow crab, Chionoecetes opilio (Brachyura: Majidae). Canadian Journal of Fisheries and Aquatic Sciences. 52(5): 903-924. https://doi.org/10.1139/f95-091
+
+Weldon, W.F.R. 1893. On certain correlated variations in Carcinus moenas. Proceedings of the Royal Society of London 54. Pp. 318-329.
 
 
