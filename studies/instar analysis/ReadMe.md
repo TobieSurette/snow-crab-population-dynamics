@@ -2,30 +2,31 @@
 
 ## Background:
 
-Snow crab size distributions, especially for smaller sizes, typically exhibit characteristic peaks clustered around the mean sizes of succeessive instars (i.e. moult stages). The properties of
-these instars can be derived from analysis of size-frequency data, leading to information about their growth characterisitcs and their abundances. Snow crab instars are numbered using roman
-numericals, starting with the first benthic stage after larvae have settled on the bottom and moulted, referred to as **instar I**. Sexual maturation starts at **instar VIII**. Larger instars can 
-undergo a final moult to maturity (called the terminal moult) whereupon they attain full sexual maturity.
+Snow crab size distributions, especially for smaller sizes, typically exhibit characteristic peaks clustered around the mean sizes of succeessive instars (i.e. moult stages). The properties of these instars can be derived from analysis of size-frequency data, leading to information about their growth characterisitcs and their abundances. Snow crab instars are generally numbered using roman numericals, starting with the first benthic stage after larvae have settled on the bottom and moulted, referred to as **instar I**. Sexual maturation starts at **instar VIII**. Larger instars can undergo a final moult to maturity (called the terminal moult) whereupon they attain full sexual maturity.
 
-A common approach is to apply **finite mixture model**, comprised of a fixed number of Gaussian components whose statistical properties, namely their mean sizes, standard errors and proportions 
-are estimated from fitting the model to a set of observed size data.
+<div align="center">
+<img
+  src="https://github.com/TobieSurette/snow-crab-population-dynamics/assets/14942142/5eace264-3229-4030-8076-3096832f6d8f/female instar example.png"
+  title=""
+  style="display: inline-block; margin: 0 auto"
+  align="center" 
+  width=700>
+ <p><em>Example of a size-frequency distribution of immature female snow crab from the souhtern Gulf of St. Lawrence crab trawl survey. Peaks in the size distribution are labelled according to their corresponding instar numbers.</em></p>
+</div>
+
+A common approach is to apply a **finite mixture model**, comprised of a fixed number of Gaussian components whose statistical properties, namely their mean sizes, standard errors and proportions are estimated from fitting the model to size data.
 
 However, there are issues with mixture models:
- - **identifiability** : a mixture fit to the data is invariant (i.e. does not change) when we exchange the component labels. So some ad hoc constraint is usually applied, such as
-   forcing the component means to be increasing, needs to be applied to properly constrain the parameter space.
- - **multiple local solutions** : in that different solutions can give similar fits to the data. Some of these solutions are also degenerate, e.g. shrinking the variance around a particular
-   observations yields arbitrarily high likelihood. 
- - **instar stage is unknown** : Other than a size-frequency analysis, there is no way to independently determine the instar stage. There is no internal structure that we can analyse and count 
-   the number of benthic moults a crab has undergone. 
+ - **identifiability** : a mixture fit to the data is invariant (i.e. does not change) when we exchange the component labels. So some ad hoc constraint is usually applied, such as forcing the component means to be increasing, needs to be applied to properly constrain the parameter space.
+ - **multiple local solutions** : in that different solutions can give similar fits to the data. Some of these solutions are also degenerate, e.g. shrinking the variance around a particular observations yields arbitrarily high likelihood. 
+ - **instar stage** : Other than a size-frequency analysis, there is no way to independently verify the instar stage, i.e. the true instar stage is unknown There is no internal structure that we can analyse and count the number of benthic moults a crab has undergone. 
  - The **size overlap** between successive instars increases as they grow, leading to difficulties in resolving larger instars (generally starting at instar **IX** or larger).
-   Size overlap also increases with maturition, leading to sill more variation in growth. Because of this, unstructured mixture models tend converge to converge to solutions which are
-   at odds with biological knowledge or assumptions for larger instar sizes. 
-
+   Size overlap also increases with maturition, leading to sill more variation in growth. Because of this, unstructured mixture models tend converge to converge to solutions which are at odds with biological knowledge or assumptions for larger instar sizes. 
+  
 ## Methods 
 
 ### Data 
-Data used are from the southern Gulf of St. Lawrence (sGSL) **snow crab survey**. This is a scientific survey that specially targets snow crab in the sGSL. It uses a European-style Nephrops trawl 
-that is designed to dig into soft sediment. 
+Data used are from the southern Gulf of St. Lawrence (sGSL) **snow crab survey**. This is a scientific survey that specially targets snow crab in the sGSL. It uses a European-style Nephrops trawl that is designed to dig into soft sediment. 
 
 ### Modelling approach
 - Incorporate some **biological growth structure** into the mixture model.
