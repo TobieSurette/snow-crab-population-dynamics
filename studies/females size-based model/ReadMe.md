@@ -22,10 +22,23 @@ clutch of eggs for a second year, as part of a two-year incubation cycle, would 
 
 The global maturity-stage can be represented as the following diagram:
 
-![image](https://github.com/TobieSurette/snow-crab-population-dynamics/assets/14942142/8fb00d82-9aa6-4513-8672-a7389fa327ea)
+<div align="center">
+<img
+  src="https://github.com/TobieSurette/snow-crab-population-dynamics/assets/14942142/ece93af3-f55e-4f26-8859-ff30b4fc1811"
+  style="display: inline-block; margin: 0 auto"
+  align="center" 
+  width=150>
+</div>
 
 where arrows represent annual increments of time.
 
 The global maturity-stage can be broken down into instars, as in the following diagram:
 
-![image](https://github.com/TobieSurette/snow-crab-population-dynamics/assets/14942142/17b1d72a-96bd-4289-87f1-fd6b2b00c438)
+<div align="center">
+<img
+  src="https://github.com/TobieSurette/snow-crab-population-dynamics/assets/14942142/17b1d72a-96bd-4289-87f1-fd6b2b00c438"
+  style="display: inline-block; margin: 0 auto"
+  align="center" 
+  width=700>
+</div>
+
