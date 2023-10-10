@@ -1,32 +1,6 @@
 # Fit Hiatt mixture density to immatures:
-llmix <- function(theta, x, fixed){
-   if (!missing(fixed)) theta <- c(theta, fixed)
-
-   # Instar proportions:
-   p <- theta[grep("logit", names(theta))]
-   p <- exp(p) / (1 + sum(exp(p)))  
-   k <- length(p) + 1  # Number of instars.
-   p[k] <- 1 - sum(p)
-   
-   # Instar mean sizes:
-   mu <- theta["mu0"]          
-   for (i in 2:k) mu[i] <- theta["intercept"] + theta["slope"] * mu[i-1]
-   
-   # Instar standard errors:
-   sigma <- exp(theta["log.sigma"]) * mu
-   
-   # Prepare data:
-   f <- as.numeric(x)
-   x <- as.numeric(names(x))
-   
-   # Calculate mixture density:
-   ll <- rep(0, length(x))
-   for (i in 1:k){
-      ll <- ll + p[i] * dnorm(x, mu[i], sigma[i])
-   }
-   
-   return(sum(- f * log(ll)))
-}
+source("R/growth.R")
+source("R/mixture.R")
 
 theta <- c(logit.p = c(1,1,1,1,1), mu0 = 10, intercept = 2, slope = 1.27, log.sigma = -2)
 fixed <- theta[-grep("logit", names(theta))]

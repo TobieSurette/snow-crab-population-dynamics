@@ -43,3 +43,8 @@ ti <- aggregate(si[fvars], by = list(year = year(si)), mean)
 tp <- aggregate(sp[fvars], by = list(year = year(sp)), mean)
 tm <- aggregate(sm[fvars], by = list(year = year(sm)), mean)
 
+# Aggregated surgvey summaries:
+mi <- 1000000 * apply(ti[fvars], 2, mean)
+mp <- 1000000 * apply(tp[fvars], 2, mean)
+mm <- 1000000 * apply(tm[fvars], 2, mean)
+
